@@ -6,7 +6,7 @@ public class Interactable : MonoBehaviour
 {
     [SerializeField] public InteractableData data;
 
-    [SerializeField] Rigidbody2D rb2D;
+    [SerializeField] public Rigidbody2D rb2D;
     
 
     public virtual void OnPick()
@@ -16,13 +16,13 @@ public class Interactable : MonoBehaviour
             rb2D.simulated = false;
         }
     }
-    public virtual void OnRelease()
+    public virtual void OnRelease(Vector2 velocity)
     {
 
         if (rb2D)
         {
             rb2D.simulated = true;
-            rb2D.velocity = Vector2.zero;
+            rb2D.velocity = velocity;
             rb2D.angularVelocity =0;
         }
     }

@@ -45,10 +45,9 @@ public class UIController : MonoBehaviour
 
             if (pickedInteractable)
             {
-                Vector2 pos = pickedInteractable.transform.position;
                 pickedInteractable.transform.parent = pickedParent;
-
-                pickedInteractable.OnRelease();
+                Debug.Log(touch.deltaPosition);
+                pickedInteractable.OnRelease(touch.deltaPosition/Time.deltaTime*0.25f);
 
                 Collider2D hit = Physics2D.OverlapPoint(position, characterLayer);
                 if(hit != null)

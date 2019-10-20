@@ -92,7 +92,7 @@ public class TouchController : MonoBehaviour
             touching = false;
             newTouch.phase = SimpleTouch.TouchPhase.Ended;
             newTouch.position = touch.position;
-            newTouch.deltaPosition = Vector2.zero;
+            newTouch.deltaPosition = touch.deltaPosition;
             OnTouchEnd?.Invoke(newTouch);
 
 
