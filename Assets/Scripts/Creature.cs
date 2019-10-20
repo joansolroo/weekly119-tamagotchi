@@ -9,6 +9,10 @@ public class Creature : Interactable
     [SerializeField] Clock clock;
     [SerializeField] AudioSource audio;
 
+    [Header("Spawnable")]
+    [SerializeField] GameObject poopSpawner;
+    [SerializeField] GameObject poopPrefab;
+
     [Header("Stats")]
     [SerializeField] Statistic hp;
     [SerializeField] Statistic hunger;
@@ -23,6 +27,7 @@ public class Creature : Interactable
     [Header("Status")]
     [SerializeField] long age = 0;
     [SerializeField] bool sleeping = false;
+    [SerializeField] int poopTimer = 20;
     private void Start()
     {
         Clock.main.OnTick += Tick;
@@ -63,6 +68,13 @@ public class Creature : Interactable
                     happiness.Reduce(1);
                 }
 
+                --poopTimer;
+                if(poopTimer<=0)
+                {
+                    GameObject poop = Instantiate<GameObject>(poopPrefab);
+                    poop.transform.position = poopSpawner.transform.position;
+                    poopTimer = 20;
+                }
 
                 if (energy.current == 0)
                 {
@@ -111,10 +123,12 @@ public class Creature : Interactable
     {
         return happiness.Increase(1);
     }
-    public void DoInteract(Interactable interactable)
+    override public bool OnInteract(Interactable interactable)
     {
+        bool success = false;
         if (!sleeping)
         {
+            
             if (interactable.data)
             {
                 if (interactable.data.type == InteractableData.InteractableType.food)
@@ -122,7 +136,7 @@ public class Creature : Interactable
                     if (hunger.Increase(interactable.data.amount))
                     {
                         interactable.OnConsumed();
-                        audio.PlayOneShot(interactable.data.consumeClip);
+                        success = true;
                     }
                 }
                 if (interactable.data.type == InteractableData.InteractableType.energy)
@@ -130,18 +144,24 @@ public class Creature : Interactable
                     if (energy.Increase(interactable.data.amount))
                     {
                         interactable.OnConsumed();
-                        audio.PlayOneShot(interactable.data.consumeClip);
+                        success = true;
                     }
                 }
                 if (interactable.data.type == InteractableData.InteractableType.toy)
                 {
                     if (happiness.Increase(interactable.data.amount))
                     {
-                        audio.PlayOneShot(interactable.data.consumeClip);
+                        success = true;
                     }
+                }
+                if (success)
+                {
+
+                    audio.PlayOneShot(interactable.data.consumeClip);
                 }
             }
         }
+        return success;
     }
 
     void UpdateVisuals()
@@ -171,5 +191,9 @@ public class Creature : Interactable
     {
         base.OnPick();
         this.sleeping = false;
+    }
+    public override void OnConsumed()
+    {
+        //do nothing for now
     }
 }

@@ -47,15 +47,22 @@ public class UIController : MonoBehaviour
             {
                 pickedInteractable.transform.parent = pickedParent;
                 Debug.Log(touch.deltaPosition);
-                pickedInteractable.OnRelease(touch.deltaPosition/Time.deltaTime*0.25f);
+                pickedInteractable.OnRelease(touch.deltaPosition / Time.deltaTime * 0.25f);
 
-                Collider2D hit = Physics2D.OverlapPoint(position, characterLayer);
-                if(hit != null)
+                Collider2D[] hits = Physics2D.OverlapPointAll(position, characterLayer);
+                foreach (Collider2D hit in hits)
                 {
-                    Creature creature = hit.GetComponent<Creature>();
-                    if(creature!=null)
+                    if(hit.gameObject == pickedInteractable.gameObject)
                     {
-                        creature.DoInteract(pickedInteractable);
+                        continue;
+                    }
+                    Interactable interactable = hit.GetComponent<Interactable>();
+                    if (interactable != null)
+                    {
+                        if (interactable.OnInteract(pickedInteractable))
+                        {
+                            break;
+                        }
                     }
                 }
             }

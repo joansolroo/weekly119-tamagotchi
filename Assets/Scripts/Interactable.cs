@@ -27,7 +27,12 @@ public class Interactable : MonoBehaviour
         }
     }
 
-    public void OnConsumed()
+    public virtual bool OnInteract(Interactable other)
+    {
+        return false;
+    }
+
+    public virtual void OnConsumed()
     {
         GameObject.Destroy(this.gameObject);
     }
